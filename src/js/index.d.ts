@@ -42,6 +42,12 @@ declare module "lottie-react-native" {
      * default value is 1.
      */
     speed?: number;
+    
+    /**
+     * The duration of the animation in ms. Takes precedence over speed when set.
+     * This only works when source is an actual JS object of an animation.
+     */
+    duration?: number;
 
     /**
      * A boolean flag indicating whether or not the animation should loop.
@@ -91,6 +97,24 @@ declare module "lottie-react-native" {
      * mounted. This only affects the imperative API.
      */
     autoPlay?: boolean;
+
+    /**
+     * A boolean flag indicating whether or not the animation should size itself automatically
+     * according to the width in the animation's JSON. This only works when source is an actual 
+     * JS object of an animation.
+     */
+    autoSize?: boolean;
+
+    /**
+     * A boolean flag to enable merge patching in android.  
+     */
+    enableMergePathsAndroidForKitKatAndAbove?: boolean;
+
+    /**
+     * A callback function which will be called when animation is finished. Note that this
+     * callback will be called only when `loop` is set to false.
+     */
+    onAnimationFinish ?: (isCancelled: boolean) => void;
   }
 
   /**

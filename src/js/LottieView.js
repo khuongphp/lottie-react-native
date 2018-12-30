@@ -26,7 +26,7 @@ const LottieViewManager = SafeModule.module({
 });
 
 const ViewStyleExceptBorderPropType = (props, propName, componentName, ...rest) => {
-  const flattened = StyleSheet.flatten(props[propName]);
+  const flattened = StyleSheet.flatten(props[propName] || {});
   const usesBorder = Object.keys(flattened).some(key => key.startsWith('border'));
   if (usesBorder) {
     return Error(
@@ -61,6 +61,7 @@ const propTypes = {
   source: PropTypes.oneOfType([PropTypes.object, PropTypes.string]).isRequired,
   hardwareAccelerationAndroid: PropTypes.bool,
   cacheStrategy: PropTypes.oneOf(['none', 'weak', 'strong']),
+  onAnimationFinish: PropTypes.func,
 };
 
 const defaultProps = {
@@ -85,6 +86,7 @@ class LottieView extends React.Component {
     super(props);
     this.viewConfig = viewConfig;
     this.refRoot = this.refRoot.bind(this);
+    this.onAnimationFinish = this.onAnimationFinish.bind(this);
   }
 
   componentDidUpdate(prevProps) {
@@ -110,7 +112,6 @@ class LottieView extends React.Component {
   runCommand(name, args = []) {
     const handle = this.getHandle();
     if (!handle) {
-      console.warn('Trying to animate a view on an unmounted component');
       return null;
     }
 
@@ -133,6 +134,12 @@ class LottieView extends React.Component {
     this.root = root;
     if (this.props.autoPlay) {
       this.play();
+    }
+  }
+
+  onAnimationFinish(evt) {
+    if (this.props.onAnimationFinish) {
+      this.props.onAnimationFinish(evt.nativeEvent.isCancelled);
     }
   }
 
@@ -164,6 +171,7 @@ class LottieView extends React.Component {
           style={[aspectRatioStyle, sizeStyle || { width: '100%', height: '100%' }, style]}
           sourceName={sourceName}
           sourceJson={sourceJson}
+          onAnimationFinish={this.onAnimationFinish}
         />
       </View>
     );
